@@ -2,7 +2,10 @@
 
 using var context = new AppDbContext();
 
-var products = context.Products.ToList();
+var products = context.Products
+                      .Where(p => p.Price > 5000)
+                      .OrderBy(p => p.Name)
+                      .ToList();
 
 foreach (var product in products)
 {
