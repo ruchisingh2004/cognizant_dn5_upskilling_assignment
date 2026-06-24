@@ -27,3 +27,14 @@ Screenshots/Lab2_SwaggerExecute.png
 - Created GET API endpoint `/weatherforecast`
 - Tested API using Postman
 - Verified JSON response successfully
+
+## Lab 4: Web API CRUD (PUT Operation)
+
+- Implemented PUT method to update employee data
+- Used hardcoded list for employee storage
+- Validated employee ID
+- Tested using Swagger
+- Successfully updated employee using API
+
+Output:
+Employee updated successfully via PUT request

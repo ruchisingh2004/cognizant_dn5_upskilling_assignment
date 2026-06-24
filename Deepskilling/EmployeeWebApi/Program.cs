@@ -1,45 +1,66 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure Swagger
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
+// -------------------- HARD CODED EMPLOYEES --------------------
+var employees = new List<Employee>
 {
-    "Freezing", "Bracing", "Chilly", "Cool",
-    "Mild", "Warm", "Balmy", "Hot",
-    "Sweltering", "Scorching"
+    new Employee(1, "Ravi", "IT"),
+    new Employee(2, "Anita", "HR"),
+    new Employee(3, "John", "Finance")
 };
 
-app.MapGet("/weatherforecast", () =>
+// -------------------- GET ALL --------------------
+app.MapGet("/employees", () =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast(
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
+    return Results.Ok(employees);
+});
 
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+// -------------------- PUT (UPDATE EMPLOYEE) --------------------
+app.MapPut("/employees/{id}", (int id, Employee input) =>
+{
+    // Validation 1: id <= 0
+    if (id <= 0)
+    {
+        return Results.BadRequest("Invalid employee id");
+    }
 
+    // Find employee
+    var emp = employees.FirstOrDefault(e => e.Id == id);
+
+    // Validation 2: not found
+    if (emp == null)
+    {
+        return Results.BadRequest("Invalid employee id");
+    }
+
+    // Update employee
+    emp.Name = input.Name;
+    emp.Department = input.Department;
+
+    return Results.Ok(emp);
+});
+
+// -------------------- RUN APP --------------------
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+// -------------------- MODEL --------------------
+public class Employee
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+
+    public Employee(int id, string name, string department)
+    {
+        Id = id;
+        Name = name;
+        Department = department;
+    }
 }
